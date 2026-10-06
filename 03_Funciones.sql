@@ -2,6 +2,7 @@ USE pro_mysql2;
 
 DELIMITER $$
 
+DROP FUNCTION IF EXISTS fn_total_venta_cliente$$
 CREATE FUNCTION fn_total_venta_cliente(p_id_cliente INT) RETURNS DECIMAL(12,2)
 DETERMINISTIC
 BEGIN
@@ -12,6 +13,7 @@ BEGIN
     RETURN total_venta;
 END$$
 
+DROP FUNCTION IF EXISTS fn_stock_disponible$$
 CREATE FUNCTION fn_stock_disponible(p_id_producto INT) RETURNS INT
 DETERMINISTIC
 BEGIN
@@ -22,6 +24,7 @@ BEGIN
     RETURN stock_actual;
 END$$
 
+DROP FUNCTION IF EXISTS fn_nombre_completo_cliente$$
 CREATE FUNCTION fn_nombre_completo_cliente(p_id_cliente INT) RETURNS VARCHAR(255)
 DETERMINISTIC
 BEGIN
@@ -32,12 +35,14 @@ BEGIN
     RETURN nombre_completo;
 END$$
 
+DROP FUNCTION IF EXISTS fn_edad_cliente$$
 CREATE FUNCTION fn_edad_cliente(fecha_nacimiento_param DATE) RETURNS INT
 DETERMINISTIC
 BEGIN
     RETURN TIMESTAMPDIFF(YEAR, fecha_nacimiento_param, CURDATE());
 END$$
 
+DROP FUNCTION IF EXISTS fn_ultima_compra_cliente$$
 CREATE FUNCTION fn_ultima_compra_cliente(p_id_cliente INT) RETURNS DATETIME
 DETERMINISTIC
 BEGIN
@@ -48,18 +53,21 @@ BEGIN
     RETURN fecha_compra;
 END$$
 
+DROP FUNCTION IF EXISTS fn_validar_email$$
 CREATE FUNCTION fn_validar_email(email_param VARCHAR(150)) RETURNS BOOLEAN
 DETERMINISTIC
 BEGIN
     RETURN email_param REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$';
 END$$
 
+DROP FUNCTION IF EXISTS fn_iva$$
 CREATE FUNCTION fn_iva(total_venta DECIMAL(12,2)) RETURNS DECIMAL(12,2)
 DETERMINISTIC
 BEGIN
     RETURN total_venta * 0.19;
 END$$
 
+DROP FUNCTION IF EXISTS fn_precio_producto$$
 CREATE FUNCTION fn_precio_producto(p_id_producto INT) RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
@@ -70,6 +78,7 @@ BEGIN
     RETURN precio_producto;
 END$$
 
+DROP FUNCTION IF EXISTS fn_stock_por_categoria$$
 CREATE FUNCTION fn_stock_por_categoria(p_id_categoria INT) RETURNS INT
 DETERMINISTIC
 BEGIN
@@ -80,6 +89,7 @@ BEGIN
     RETURN stock_total;
 END$$
 
+DROP FUNCTION IF EXISTS fn_dias_desde_ultima_compra$$
 CREATE FUNCTION fn_dias_desde_ultima_compra(p_id_cliente INT) RETURNS INT
 DETERMINISTIC
 BEGIN
