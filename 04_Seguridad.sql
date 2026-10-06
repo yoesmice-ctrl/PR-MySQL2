@@ -1,4 +1,4 @@
-USE ecommerce_bd;
+USE pro_mysql2;
 
 DROP ROLE IF EXISTS 'Administrador_Sistema';
 DROP ROLE IF EXISTS 'Gerente_Marketing';
@@ -22,20 +22,20 @@ CREATE USER IF NOT EXISTS 'inventory_user'@'localhost' IDENTIFIED BY 'Inventory#
 CREATE USER IF NOT EXISTS 'support_user'@'localhost' IDENTIFIED BY 'Support#2026!';
 CREATE USER IF NOT EXISTS 'analyst_user'@'localhost' IDENTIFIED BY 'Analyst#2026!';
 CREATE USER IF NOT EXISTS 'auditor_user'@'localhost' IDENTIFIED BY 'Auditor#2026!';
-CREATE USER IF NOT EXISTS 'visita_user'@'localhost' IDENTIFIED BY 'Visit#2026!';
+CREATE USER IF NOT EXISTS 'visit_user'@'localhost' IDENTIFIED BY 'Visit#2026!';
 
-GRANT ALL PRIVILEGES ON ecommerce_bd.* TO 'Administrador_Sistema';
-GRANT SELECT ON ecommerce_bd.ventas TO 'Gerente_Marketing';
-GRANT SELECT ON ecommerce_bd.clientes TO 'Gerente_Marketing';
-GRANT SELECT ON ecommerce_bd.* TO 'Analista_Datos';
-GRANT UPDATE, INSERT, DELETE ON ecommerce_bd.productos TO 'Empleado_Inventario';
-GRANT SELECT ON ecommerce_bd.clientes TO 'Atencion_Cliente';
-GRANT SELECT ON ecommerce_bd.ventas TO 'Atencion_Cliente';
-GRANT SELECT ON ecommerce_bd.productos TO 'Atencion_Cliente';
-GRANT SELECT ON ecommerce_bd.ventas TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_bd.productos TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_bd.log_cambios_precio TO 'Auditor_Financiero';
-GRANT SELECT ON ecommerce_bd.productos TO 'Visitante';
+GRANT ALL PRIVILEGES ON pro_mysql2.* TO 'Administrador_Sistema';
+GRANT SELECT ON pro_mysql2.ventas TO 'Gerente_Marketing';
+GRANT SELECT ON pro_mysql2.clientes TO 'Gerente_Marketing';
+GRANT SELECT ON pro_mysql2.* TO 'Analista_Datos';
+GRANT INSERT, UPDATE, DELETE ON pro_mysql2.productos TO 'Empleado_Inventario';
+GRANT SELECT ON pro_mysql2.clientes TO 'Atencion_Cliente';
+GRANT SELECT ON pro_mysql2.ventas TO 'Atencion_Cliente';
+GRANT SELECT ON pro_mysql2.productos TO 'Atencion_Cliente';
+GRANT SELECT ON pro_mysql2.ventas TO 'Auditor_Financiero';
+GRANT SELECT ON pro_mysql2.productos TO 'Auditor_Financiero';
+GRANT SELECT ON pro_mysql2.log_cambios_precio TO 'Auditor_Financiero';
+GRANT SELECT ON pro_mysql2.productos TO 'Visitante';
 
 GRANT 'Administrador_Sistema' TO 'admin_user'@'localhost';
 GRANT 'Gerente_Marketing' TO 'marketing_user'@'localhost';
@@ -43,7 +43,7 @@ GRANT 'Empleado_Inventario' TO 'inventory_user'@'localhost';
 GRANT 'Atencion_Cliente' TO 'support_user'@'localhost';
 GRANT 'Analista_Datos' TO 'analyst_user'@'localhost';
 GRANT 'Auditor_Financiero' TO 'auditor_user'@'localhost';
-GRANT 'Visitante' TO 'visita_user'@'localhost';
+GRANT 'Visitante' TO 'visit_user'@'localhost';
 
 SET DEFAULT ROLE ALL TO 'admin_user'@'localhost';
 SET DEFAULT ROLE ALL TO 'marketing_user'@'localhost';
@@ -51,22 +51,15 @@ SET DEFAULT ROLE ALL TO 'inventory_user'@'localhost';
 SET DEFAULT ROLE ALL TO 'support_user'@'localhost';
 SET DEFAULT ROLE ALL TO 'analyst_user'@'localhost';
 SET DEFAULT ROLE ALL TO 'auditor_user'@'localhost';
-SET DEFAULT ROLE ALL TO 'visita_user'@'localhost';
-
-REVOKE DELETE, TRUNCATE ON ecommerce_bd.* FROM 'Analista_Datos';
-REVOKE UPDATE (precio) ON ecommerce_bd.productos FROM 'Empleado_Inventario';
+SET DEFAULT ROLE ALL TO 'visit_user'@'localhost';
 
 CREATE VIEW v_info_clientes_basica AS
 SELECT id_cliente, nombre, apellido, email, direccion_envio
 FROM clientes;
 
-GRANT SELECT ON ecommerce_bd.v_info_clientes_basica TO 'Atencion_Cliente';
-GRANT EXECUTE ON PROCEDURE ecommerce_bd.sp_ObtenerDashboardAdmin TO 'Gerente_Marketing';
-GRANT EXECUTE ON PROCEDURE ecommerce_bd.sp_GenerarReporteMensualVentas TO 'Gerente_Marketing';
+GRANT SELECT ON pro_mysql2.v_info_clientes_basica TO 'Atencion_Cliente';
 
-ALTER USER 'root'@'localhost' ACCOUNT LOCK;
-
-CREATE TABLE auditoria_login_usuario (
+CREATE TABLE IF NOT EXISTS auditoria_login_usuario (
     id_login INT NOT NULL AUTO_INCREMENT,
     usuario VARCHAR(100),
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -75,7 +68,7 @@ CREATE TABLE auditoria_login_usuario (
     PRIMARY KEY (id_login)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE sucursal_permisos (
+CREATE TABLE IF NOT EXISTS sucursal_permisos (
     id_sucursal_permiso INT NOT NULL AUTO_INCREMENT,
     id_sucursal INT NOT NULL,
     usuario VARCHAR(100) NOT NULL,
@@ -84,16 +77,17 @@ CREATE TABLE sucursal_permisos (
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE password_policies (
+CREATE TABLE IF NOT EXISTS password_policies (
     id_politica INT NOT NULL AUTO_INCREMENT,
     politica VARCHAR(255) NOT NULL,
     PRIMARY KEY (id_politica)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO password_policies (politica) VALUES
-('Longitud mínima de 8 caracteres, mayúsculas, números y caracteres especiales requeridos.');
+INSERT INTO password_policies (politica)
+VALUES ('Longitud mínima de 8 caracteres, mayúsculas, números y caracteres especiales requeridos.')
+ON DUPLICATE KEY UPDATE politica = VALUES(politica);
 
--- Política de contraseñas: se recomienda activar validate_password en MySQL 8
+-- Política recomendada para MySQL 8:
 -- INSTALL COMPONENT 'file://component_validate_password';
 -- SET GLOBAL validate_password.policy = MEDIUM;
 -- SET GLOBAL validate_password.length = 8;

@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS ecommerce_bd;
-CREATE DATABASE ecommerce_bd CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE ecommerce_bd;
+DROP DATABASE IF EXISTS pro_mysql2;
+CREATE DATABASE pro_mysql2 CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci;
+USE pro_mysql2;
 
 SET NAMES utf8mb4;
 

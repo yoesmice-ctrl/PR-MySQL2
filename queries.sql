@@ -1,4 +1,4 @@
-USE ecommerce_bd;
+USE pro_mysql2;
 
 -- 1. Listado de clientes
 SELECT *
@@ -11,7 +11,7 @@ JOIN clientes c ON c.id_cliente = v.id_cliente
 JOIN sucursales s ON s.id_sucursal = v.id_sucursal
 ORDER BY v.fecha_venta DESC;
 
--- 3. Productos mas vendidos
+-- 3. Productos más vendidos
 SELECT p.nombre, SUM(dv.cantidad) AS cantidad_total
 FROM detalle_ventas dv
 JOIN productos p ON p.id_producto = dv.id_producto
@@ -41,19 +41,19 @@ FROM productos
 ORDER BY precio DESC
 LIMIT 5;
 
--- 8. Inventario actual con stock minimo
+-- 8. Inventario actual con stock mínimo
 SELECT p.nombre, p.stock, p.stock_minimo, p.ubicacion
 FROM productos p
 ORDER BY p.stock ASC;
 
--- 9. Clientes con mas compras
+-- 9. Clientes con más compras
 SELECT c.nombre, c.apellido, COUNT(v.id_venta) AS cantidad_ventas
 FROM clientes c
 LEFT JOIN ventas v ON v.id_cliente = c.id_cliente
 GROUP BY c.id_cliente, c.nombre, c.apellido
 ORDER BY cantidad_ventas DESC;
 
--- 10. Promedio de calificacion por producto
+-- 10. Promedio de calificación por producto
 SELECT p.nombre, ROUND(AVG(r.calificacion), 2) AS promedio_calificacion
 FROM resenas_productos r
 JOIN productos p ON p.id_producto = r.id_producto
